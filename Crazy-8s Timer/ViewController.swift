@@ -10,10 +10,13 @@ import AVFoundation
 
 class ViewController: UIViewController, AVAudioPlayerDelegate {
     
-    @IBOutlet var countDownLabel: UILabel!
-    @IBOutlet var sessionLabel: UILabel!
-    @IBOutlet var startButton: UIButton!
-    @IBOutlet var resetButton: UIButton!
+//    @IBOutlet var countDownLabel: UILabel!
+//    @IBOutlet var sessionLabel: UILabel!
+//    @IBOutlet var startButton: UIButton!
+//    @IBOutlet var resetButton: UIButton!
+    
+    let sessionButton = UIButton()
+    let resetSessionButton = UIButton()
     
     var countDownTime: Int = 60
     var sessionCount: Int = 1
@@ -28,12 +31,72 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     var audioPlayer: AVAudioPlayer!
     var selectedSoundFileName: String = ""
     let sound: String = "note1"
-
+    
+    let shapeLayer = CAShapeLayer()
+    let trackLayer = CAShapeLayer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        startSession(startButton)
+        
+        createCircularTrackLayer()
+        circularAnimationLayer()
+        
+        
+        
+//        startSession(startButton)
+        
+//        configureSessionButton()
+//        configureResetSessionButton()
     }
     
+    func createCircularTrackLayer() {
+        let center = view.center
+        let circularPath = UIBezierPath(arcCenter: center, radius: 150, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
+        trackLayer.path = circularPath.cgPath
+        
+        trackLayer.strokeColor = UIColor.lightGray.cgColor
+        trackLayer.lineWidth = 15
+        trackLayer.fillColor = UIColor.clear.cgColor
+//        trackLayer.lineCap = CAShapeLayerLineCap.round
+        
+//        shapeLayer.strokeEnd = 0
+        
+        view.layer.addSublayer(trackLayer)
+    }
+    
+    func circularAnimationLayer() {
+        let center = view.center
+        let circularPath = UIBezierPath(arcCenter: center, radius: 150, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
+        shapeLayer.path = circularPath.cgPath
+        
+        shapeLayer.strokeColor = UIColor.red.cgColor
+        shapeLayer.lineWidth = 15
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.lineCap = CAShapeLayerLineCap.round
+        
+        shapeLayer.strokeEnd = 0
+        
+        view.layer.addSublayer(shapeLayer)
+        
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapToRun)))
+    }
+    
+    
+    @objc func tapToRun() {
+        print("Attempting to animate stroke")
+        
+        let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
+        basicAnimation.toValue = 1
+        basicAnimation.duration = 3
+        
+        basicAnimation.fillMode = CAMediaTimingFillMode.forwards
+        basicAnimation.isRemovedOnCompletion = false
+        
+        shapeLayer.add(basicAnimation, forKey: "circular")
+    }
+    
+
+    /*
     func startTimer() {
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(session), userInfo: nil, repeats: true)
     }
@@ -112,8 +175,53 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 
         audioPlayer.play()
     }
+*/
+    
+    // MARK:- Button configurations
+    
+    func configureSessionButton() {
+        sessionButton.setTitle("Start Session", for: .normal)
+        sessionButton.backgroundColor = .systemGreen
+        
+        addSessionButtonConstraints()
+    }
+    
+    func configureResetSessionButton() {
+        resetSessionButton.setTitle("Reset", for: .normal)
+        resetSessionButton.backgroundColor = .black
+        
+        addResetSessionButtonConstraints()
+    }
+    
+    // MARK:- Auto layout for buttons
+    
+    func addSessionButtonConstraints() {
+        view.addSubview(sessionButton)
+        sessionButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            sessionButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 250),
+            sessionButton.heightAnchor.constraint(equalToConstant: 50),
+            sessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+            sessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50)
+        ])
+    }
+    
+    func addResetSessionButtonConstraints() {
+        view.addSubview(resetSessionButton)
+        resetSessionButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            resetSessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+//            resetSessionButton.heightAnchor.constraint(equalToConstant: 35),
+//            resetSessionButton.widthAnchor.constraint(equalToConstant: 250)
+            resetSessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
+            resetSessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50)
+        ])
+    }
     
 }
+
 
 // MARK:- NOTES
 
