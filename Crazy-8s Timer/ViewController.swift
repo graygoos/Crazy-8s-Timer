@@ -84,7 +84,6 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-//        self.createCircularTrackLayer()
         self.circularAnimationLayer()
     }
     
@@ -118,20 +117,17 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     @objc func startTimer() {
         basicAnimation()
-//        circularAnimationLayer()
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(session), userInfo: nil, repeats: true)
-        
     }
     
     @objc func session() {
-//        circularAnimationLayer()
         if countDownTime > 0 {
             countDownTime -= 1
-//            circularAnimationLayer()
         } else if sketchCount <= 7 {
             countDownTime = 60
             sketchCount += 1
             playSound()
+            basicAnimation()
         } else {
             timer.invalidate()
             sketchCount = 0
@@ -141,7 +137,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
             reset()
             sessionButton.isEnabled = true
         }
-//        circularAnimationLayer()
+        
         timerLabel.text = "\(countDownTime)"
         sessionCounter.text = "Sketch: \(sketchCount)"
     }
@@ -179,18 +175,14 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     func circularAnimationLayer() {
-        let center = view.center
-        let circularPath = UIBezierPath(arcCenter: center, radius: 150, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: false)
         
-//        let endAngle = (-CGFloat.pi / 2)
-//        let startAngle = 2 * CGFloat.pi + endAngle
-//
-//        let circularPath = UIBezierPath(arcCenter: center, radius: 150, startAngle: startAngle + endAngle, endAngle: endAngle, clockwise: true)
+        let center = view.center
+        let circularPath = UIBezierPath(arcCenter: center, radius: 150, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
 
         shapeLayer.path = circularPath.cgPath
-        shapeLayer.lineWidth = 25
+        shapeLayer.lineWidth = 20
         shapeLayer.fillColor = UIColor.clear.cgColor
-        shapeLayer.strokeEnd = 1
+        shapeLayer.strokeEnd = 0
         shapeLayer.lineCap = CAShapeLayerLineCap.round
         shapeLayer.strokeColor = UIColor.blue.cgColor
         
@@ -198,30 +190,22 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         
        
         trackLayer.addSublayer(shapeLayer)
-//        view.layer.addSublayer(shapeLayer)
-//        basicAnimation()
-//        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(session)))
     }
     
     
-//    @objc func tapToRun() {
     func basicAnimation() {
-//        print("Attempting to animate stroke")
+
         circularAnimationLayer()
         let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
-//        basicAnimation.toValue = 1
-        basicAnimation.toValue = 0
-//        basicAnimation.duration = 3
+        basicAnimation.toValue = 0.8
+
         basicAnimation.duration = CFTimeInterval(countDownTime)
         
         basicAnimation.fillMode = CAMediaTimingFillMode.forwards
-//        basicAnimation.isRemovedOnCompletion = false
+
         basicAnimation.isRemovedOnCompletion = true
-        
-//        shapeLayer.add(basicAnimation, forKey: "circular")
+
         shapeLayer.add(basicAnimation, forKey: "basicAnimation")
-//        circularAnimationLayer()
-//        startSession()
     }
     
      
