@@ -13,6 +13,7 @@
 		053648E226DA3F72002C988E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 053648E026DA3F72002C988E /* Main.storyboard */; };
 		053648E426DA3F75002C988E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 053648E326DA3F75002C988E /* Assets.xcassets */; };
 		053648E726DA3F75002C988E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 053648E526DA3F75002C988E /* LaunchScreen.storyboard */; };
+		05BCFDF727D602B70018F564 /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BCFDF627D602B70018F564 /* InfoViewController.swift */; };
 		05DD65CB2743C65400DFE287 /* CircularAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DD65CA2743C65400DFE287 /* CircularAnimation.swift */; };
 		05E2998D270A590C00D11C20 /* note1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 05E2998C270A590C00D11C20 /* note1.wav */; };
 /* End PBXBuildFile section */
@@ -26,6 +27,7 @@
 		053648E326DA3F75002C988E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		053648E626DA3F75002C988E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		053648E826DA3F75002C988E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		05BCFDF627D602B70018F564 /* InfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
 		05DD65CA2743C65400DFE287 /* CircularAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularAnimation.swift; sourceTree = "<group>"; };
 		05E2998C270A590C00D11C20 /* note1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = note1.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -64,6 +66,7 @@
 				053648DA26DA3F72002C988E /* AppDelegate.swift */,
 				053648DC26DA3F72002C988E /* SceneDelegate.swift */,
 				053648DE26DA3F72002C988E /* ViewController.swift */,
+				05BCFDF627D602B70018F564 /* InfoViewController.swift */,
 				05DD65CA2743C65400DFE287 /* CircularAnimation.swift */,
 				053648E026DA3F72002C988E /* Main.storyboard */,
 				053648E326DA3F75002C988E /* Assets.xcassets */,
@@ -156,6 +159,7 @@
 				053648DB26DA3F72002C988E /* AppDelegate.swift in Sources */,
 				053648DD26DA3F72002C988E /* SceneDelegate.swift in Sources */,
 				05DD65CB2743C65400DFE287 /* CircularAnimation.swift in Sources */,
+				05BCFDF727D602B70018F564 /* InfoViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

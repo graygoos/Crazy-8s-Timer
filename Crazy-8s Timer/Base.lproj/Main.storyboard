@@ -20,12 +20,38 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="3uF-AG-DCe">
-                        <barButtonItem key="leftBarButtonItem" title="Item" image="info.circle" catalog="system" id="IV8-KN-PCD"/>
+                        <barButtonItem key="leftBarButtonItem" title="Item" image="info.circle" catalog="system" id="IV8-KN-PCD">
+                            <connections>
+                                <segue destination="ccc-P3-HcO" kind="presentation" id="xKZ-7J-yJ2"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="928.98550724637687" y="79.6875"/>
+        </scene>
+        <!--Info View Controller-->
+        <scene sceneID="Her-52-FNt">
+            <objects>
+                <viewController id="WRH-he-zyU" customClass="InfoViewController" customModule="Crazy_8s_Timer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="RGm-Gm-5tP">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="bi9-lB-XNd"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Edx-bD-ex1">
+                        <barButtonItem key="rightBarButtonItem" title="Close" image="xmark" catalog="system" id="ZDa-xR-q4i">
+                            <connections>
+                                <action selector="closeInfoScreen:" destination="WRH-he-zyU" id="DhL-wK-N8U"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ucl-jR-e81" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2818.840579710145" y="79.6875"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="euh-Gb-XNo">
@@ -45,9 +71,28 @@
             </objects>
             <point key="canvasLocation" x="18.840579710144929" y="79.6875"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="aat-xJ-zLa">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ccc-P3-HcO" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="oeo-64-bau">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="WRH-he-zyU" kind="relationship" relationship="rootViewController" id="2Xg-eC-o5M"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oVb-Zh-yWz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1908.6956521739132" y="79.6875"/>
+        </scene>
     </scenes>
     <resources>
         <image name="info.circle" catalog="system" width="128" height="121"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

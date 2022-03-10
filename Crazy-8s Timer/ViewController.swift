@@ -10,11 +10,6 @@ import AVFoundation
 
 class ViewController: UIViewController, AVAudioPlayerDelegate {
     
-//    @IBOutlet var countDownLabel: UILabel!
-//    @IBOutlet var sessionLabel: UILabel!
-//    @IBOutlet var startButton: UIButton!
-//    @IBOutlet var resetButton: UIButton!
-    
     let infoLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemBrown
@@ -52,6 +47,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         button.layer.cornerRadius = 20
         button.backgroundColor = .systemGreen
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Start Crazy-8 Session", for: .normal)
         
         return button
     }()
@@ -59,7 +55,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     let resetSessionButton: UIButton = {
         let button = UIButton()
         button.layer.cornerRadius = 20
-        button.backgroundColor = .systemYellow
+        button.backgroundColor = .systemRed
         button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
@@ -72,6 +68,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     var isTimerRunning: Bool = false
     var inSession: Bool = false
+    var pauseTapped: Bool = false
     
     var timer = Timer()
     
@@ -92,10 +89,13 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 //        navigationItem.title = "Crazy-8s Timer"
 //        navigationController?.navigationBar.prefersLargeTitles = true
         
+//        view.backgroundColor = .black
+        
         createCircularTrackLayer()
 //        circularAnimationLayer()
         
         timerLabel.text = "\(countDownTime)"
+//        timerLabel.textColor = .systemBrown
         sessionCounter.text = "Sketch: \(sketchCount)"
 //        infoLabel.text = "Sketch 8 ideas in 8 minutes"
         infoLabel.text = "Crazy-8s timer"
@@ -103,60 +103,94 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         addLabelConstraints()
         addSessionButtonConstraints()
         addResetSessionButtonConstraints()
-//        startSession(startButton)
+
+        sessionButton.addTarget(self, action: #selector(startSession), for: .touchUpInside)
         
-//        configureSessionButton()
-//        configureResetSessionButton()
-        startSession()
-        sessionButton.addTarget(self, action: #selector(startTimer), for: .touchUpInside)
-//        sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
-        
+        resetSessionButton.isHidden = true
         resetSessionButton.addTarget(self, action: #selector(reset), for: .touchUpInside)
         resetSessionButton.setTitle("Reset", for: .normal)
     }
     
-    @objc func startTimer() {
-        basicAnimation()
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(session), userInfo: nil, repeats: true)
+    @objc func startSession() {
+        if isTimerRunning == false {
+            startTimer()
+            sessionButton.setTitle("Pause Session", for: .normal)
+            sessionButton.backgroundColor = .systemYellow
+//            sessionButton.backgroundColor = .systemGreen
+            resetSessionButton.isHidden = false
+            isTimerRunning = true
+        } else if pauseTapped == false && isTimerRunning == true {
+            sessionButton.setTitle("Resume Session", for: .normal)
+            sessionButton.backgroundColor = .systemGreen
+            timer.invalidate()
+            resetSessionButton.isHidden = false
+            isTimerRunning = false
+            pauseTapped = false
+        }
+//        } else {
+//            startTimer()
+////            sessionButton.setTitle("Resume Session", for: .normal)
+////            sessionButton.backgroundColor = .systemOrange
+//            isTimerRunning = true
+//            pauseTapped = false
+//        }
     }
+    
+    
+    @objc func startTimer() {
+//        startSession()
+//        basicAnimation() // deComment to start animation
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(session), userInfo: nil, repeats: true)
+        isTimerRunning = true
+    }
+    
     
     @objc func session() {
         if countDownTime > 0 {
             countDownTime -= 1
+//            sessionButton.setTitle("Pause Session", for: .normal)
+//            sessionButton.backgroundColor = .systemYellow
+//            pauseTapped = true
+//            startSession()
         } else if sketchCount <= 7 {
             countDownTime = 60
             sketchCount += 1
             playSound()
-            basicAnimation()
+//            basicAnimation() // deComment to start animation
         } else {
             timer.invalidate()
             sketchCount = 0
             sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
+            resetSessionButton.isHidden = true
             playSound()
             audioPlayer.numberOfLoops = 2
             reset()
-            sessionButton.isEnabled = true
+//            sessionButton.isEnabled = true
         }
         
+//        resetSessionButton.isHidden = true
         timerLabel.text = "\(countDownTime)"
         sessionCounter.text = "Sketch: \(sketchCount)"
+//        inSession = false
     }
     
-    func startSession() {
-        if self.inSession == false {
-            timer.invalidate()
-            isTimerRunning = false
-            self.inSession = true
-            self.sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
-            self.sessionButton.backgroundColor = .systemGreen
-        } else {
-            startTimer()
-            self.inSession = false
-            isTimerRunning = true
-            self.sessionButton.setTitle("Pause Session", for: .normal)
-            self.sessionButton.backgroundColor = .systemYellow
-        }
+    
+    @objc func reset() {
+        timer.invalidate()
+        countDownTime = 60
+        sketchCount = 1
+        timerLabel.text = "\(countDownTime)"
+        sessionCounter.text = "Sketch: \(sketchCount)"
+        sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
+        sessionButton.backgroundColor = .systemGreen
+//        startSession(startButton)
+        timer.invalidate()
+        resetSessionButton.isHidden = true
+        isTimerRunning = false
+//        inSession = false
     }
+    
+    
     
     
     func createCircularTrackLayer() {
@@ -186,9 +220,6 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         shapeLayer.lineCap = CAShapeLayerLineCap.round
         shapeLayer.strokeColor = UIColor.blue.cgColor
         
-        
-        
-       
         trackLayer.addSublayer(shapeLayer)
     }
     
@@ -208,154 +239,32 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         shapeLayer.add(basicAnimation, forKey: "basicAnimation")
     }
     
-     
-    @objc func reset() {
-        timer.invalidate()
-        countDownTime = 60
-        sketchCount = 1
-        timerLabel.text = "\(countDownTime)"
-        sessionCounter.text = "Sketch: \(sketchCount)"
-        sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
-        sessionButton.backgroundColor = .systemGreen
-//        startSession(startButton)
-        timer.invalidate()
+    // Pause circular animation
+    func pauseAnimation(layer: CAShapeLayer) {
+        let paused: CFTimeInterval = layer.convertTime(CACurrentMediaTime(), from: nil)
+        layer.speed = 0.0
+        layer.timeOffset = paused
     }
     
-/*
-    func startTimer() {
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(session), userInfo: nil, repeats: true)
+    // resume circular animation
+    func resumeAnimation(layer: CAShapeLayer) {
+        let paused = layer.timeOffset
+        layer.speed = 1.0
+        layer.timeOffset = 0.0
+        layer.beginTime = 0.0
+        let timeSincePause = layer.convertTime(CACurrentMediaTime(), from: nil) - paused
+        layer.beginTime = timeSincePause
     }
+    
+    // reset circular animation
+    func resetAnimation(layer: CAShapeLayer) {
+//        let removeBasicAnimation = layer.removeAnimation(forKey: "basicAnimation")
+        layer.removeAllAnimations()
+        
+    }
+    
 
-    // MARK:- Button configurations
-//    @IBAction func startSession(_ sender: UIButton
-    func configureSessionButton() {
-//        sessionButton.setTitle("Start Session", for: .normal)
-//        sessionButton.backgroundColor = .systemGreen
-        
-        if self.inSession == false {
-            timer.invalidate()
-            isTimerRunning = false
-            self.inSession = true
-            self.sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
-            self.sessionButton.backgroundColor = .systemGreen
-        } else {
-            startTimer()
-            self.inSession = false
-            isTimerRunning = true
-            self.sessionButton.setTitle("Pause Session", for: .normal)
-            self.sessionButton.backgroundColor = .systemYellow
-        }
-        
-        addSessionButtonConstraints()
-    }
     
-    @objc func session() {
-        if countDownTime > 0 {
-            countDownTime -= 1
-        } else if sessionCount <= 7 {
-            countDownTime = 60
-            sessionCount += 1
-            playSound()
-        } else {
-            timer.invalidate()
-            sessionCount = 0
-            sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
-            playSound()
-            audioPlayer.numberOfLoops = 2
-            reset()
-            sessionButton.isEnabled = true
-        }
-        
-        timerLabel.text = "\(countDownTime)"
-        sessionCounter.text = "\(sessionCount)"
-    }
-    
-    func configureResetSessionButton() {
-        resetSessionButton.setTitle("Reset", for: .normal)
-        resetSessionButton.backgroundColor = .systemBrown
-        
-            reset()
-        
-        addResetSessionButtonConstraints()
-    }
-    
-    @objc func reset() {
-        timer.invalidate()
-        countDownTime = 60
-        sessionCount = 1
-        timerLabel.text = "\(countDownTime)"
-        sessionCounter.text = "\(sessionCount)"
-        sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
-        sessionButton.backgroundColor = .systemGreen
-//        startSession(startButton)
-        timer.invalidate()
-    }
-    
-*/
-    
-   
-/*
-    
-    // MARK:- Start session / Pause session
-    
-    @IBAction func startSession(_ sender: UIButton) {
-
-        if self.inSession == false {
-            timer.invalidate()
-            isTimerRunning = false
-            self.inSession = true
-            self.startButton.setTitle("Start Crazy-8 Session", for: .normal)
-            self.startButton.backgroundColor = .systemGreen
-        } else {
-            startTimer()
-            self.inSession = false
-            isTimerRunning = true
-            self.startButton.setTitle("Pause Session", for: .normal)
-            self.startButton.backgroundColor = .systemYellow
-        }
-    }
-    
-    
-    @objc func session() {
-        if countDownTime > 0 {
-            countDownTime -= 1
-        } else if sessionCount <= 7 {
-            countDownTime = 60
-            sessionCount += 1
-            playSound()
-        } else {
-            timer.invalidate()
-            sessionCount = 0
-            startButton.setTitle("Start Crazy-8 Session", for: .normal)
-            playSound()
-            audioPlayer.numberOfLoops = 2
-            reset()
-            startButton.isEnabled = true
-        }
-        
-        countDownLabel.text = "\(countDownTime)"
-        sessionLabel.text = "\(sessionCount)"
-    }
-    
-    // MARK:- Reset Session
-    
-    @IBAction func resetSession(_sender: UIButton) {
-        reset()
-    }
-    
-    @objc func reset() {
-        timer.invalidate()
-        countDownTime = 60
-        sessionCount = 1
-        countDownLabel.text = "\(countDownTime)"
-        sessionLabel.text = "\(sessionCount)"
-        startButton.setTitle("Start Crazy-8 Session", for: .normal)
-        startButton.backgroundColor = .systemGreen
-//        startSession(startButton)
-        timer.invalidate()
-    }
-
-*/
     // MARK:- PLAY SOUND
     
     func playSound() {
@@ -374,31 +283,32 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     // MARK:- Auto layout for buttons
     
-    func addSessionButtonConstraints() {
-        view.addSubview(sessionButton)
-        sessionButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            sessionButton.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: 100),
-            sessionButton.heightAnchor.constraint(equalToConstant: 50),
-            sessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-            sessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50)
-        ])
-    }
-    
     func addResetSessionButtonConstraints() {
         view.addSubview(resetSessionButton)
         resetSessionButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-//            resetSessionButton.topAnchor.constraint(equalTo: sessionButton.bottomAnchor, constant: 50),
-            resetSessionButton.heightAnchor.constraint(equalToConstant: 45),
-//            resetSessionButton.widthAnchor.constraint(equalToConstant: 250)
-            resetSessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
+            resetSessionButton.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: 100),
+            resetSessionButton.heightAnchor.constraint(equalToConstant: 50),
             resetSessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-            resetSessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
+            resetSessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50)
         ])
     }
+    
+    func addSessionButtonConstraints() {
+        view.addSubview(sessionButton)
+        sessionButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        NSLayoutConstraint.activate([
+            sessionButton.heightAnchor.constraint(equalToConstant: 45),
+            sessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
+            sessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+            sessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
+        ])
+        
+    }
+    
     
     // MARK:- Auto Layout for labels
     
@@ -430,13 +340,25 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 
 // MARK:- NOTES
 
+//TODO:
+// Start, Pause, Resume, Reset functionality of buttons ✅
+// Fix timer bug - tapping start session button twice makes countdown run faster ✅
+// Animation - Pause, Resume, Reset
+// Buttons - Initially only StartButton placed centrally in space below circular track, when StartButton is pressed, the Start Session and Reset buttons appear in their respective positions ✅
+// AutoLayout - calculate the sizes and positions of circular track and buttons and text depending on size of screen - use multipliers - so it works seamlessly on all iPhones and iPads
+// Info Screen
+// second, microseconds, milliseconds countdown and place where sketch count presently is now - last last thing (and swap with where the seconds count is now)
+
+// future feature - settings icon top right of nav controller - change/select sounds
+
+
 // Pause timer, reset timer, toggle button title (text)/function and color✅
 // plays sound when you start timer after completing session ✅
 // placed reset function in else clause of session()
 
 /* Bugs to fix:
  tapping start session button twice makes countdown run faster
- tapping the reset button pauses the timer, instead of restarting crazy-8s session
+ tapping the reset button pauses the timer, instead of restarting crazy-8s session✅
  I have to tap the startSession button twice to get it running initially
  */
 
