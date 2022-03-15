@@ -11,16 +11,16 @@ class InfoViewController: UIViewController {
     
     
     var infoText = """
-    This is a Crazy-8s timer.
-    Sketch eight ideas in 8 minutes. You have 60 seconds to sketch an idea. The timer will beep every 60 seconds, prompting you to start sketching the next idea. At the end of the eighth minute, the timer will beep three times letting you know you've come to the end of the Crazy-8s session.
-    Happy sketching as you get your creative juices flowing! 👍🏽
+This is a Crazy-8s timer.
+Sketch eight ideas in 8 minutes. You have 60 seconds to sketch an idea. The timer will beep every 60 seconds, prompting you to start sketching the next idea. At the end of the eighth minute, the timer will beep three times letting you know you've come to the end of the Crazy-8s session.
+Happy sketching! 👍🏽
 """
     
     let infoTextLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .justified
-        label.font = UIFont.boldSystemFont(ofSize: 30)
-        label.textColor = .systemBlue
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+//        label.textColor = .systemBlue
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -34,19 +34,26 @@ class InfoViewController: UIViewController {
         
         infoTextLabel.text = infoText
         
+        view.backgroundColor = .systemBackground
+        
         infoTextConstraints()
         
     }
     
-    @IBAction func closeInfoScreen(_ sender: Any) {
+    
+    // Mark:- Close View Controller
+    
+    @IBAction func closeInfoVC(_ sender: Any) {
         dismiss(animated: true)
     }
+    
+    
+    // Mark:- Auto Layout
     
     func infoTextConstraints() {
         view.addSubview(infoTextLabel)
         NSLayoutConstraint.activate([
             infoTextLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 70),
-//            infoTextLabel.r.constraint(equalTo: view.centerYAnchor),
             infoTextLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             infoTextLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])

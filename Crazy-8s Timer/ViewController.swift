@@ -112,28 +112,34 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     @objc func startSession() {
+
         if isTimerRunning == false {
-            startTimer()
-            sessionButton.setTitle("Pause Session", for: .normal)
-            sessionButton.backgroundColor = .systemYellow
-//            sessionButton.backgroundColor = .systemGreen
-            resetSessionButton.isHidden = false
-            isTimerRunning = true
+            if countDownTime < 60 {
+                resumeAnimation(layer: shapeLayer)
+                startTimer()
+                sessionButton.setTitle("Pause Session", for: .normal)
+                sessionButton.backgroundColor = .systemYellow
+                print("resume")
+            } else {
+                startTimer()
+                basicAnimation()
+                sessionButton.setTitle("Pause Session", for: .normal)
+                sessionButton.backgroundColor = .systemYellow
+                resetSessionButton.isHidden = false
+                isTimerRunning = true
+                print("start")
+            }
+            
         } else if pauseTapped == false && isTimerRunning == true {
+            timer.invalidate()
+            pauseAnimation(layer: shapeLayer)
             sessionButton.setTitle("Resume Session", for: .normal)
             sessionButton.backgroundColor = .systemGreen
-            timer.invalidate()
             resetSessionButton.isHidden = false
             isTimerRunning = false
-            pauseTapped = false
-        }
-//        } else {
-//            startTimer()
-////            sessionButton.setTitle("Resume Session", for: .normal)
-////            sessionButton.backgroundColor = .systemOrange
-//            isTimerRunning = true
+            print("pause")
 //            pauseTapped = false
-//        }
+        }
     }
     
     
@@ -148,15 +154,11 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     @objc func session() {
         if countDownTime > 0 {
             countDownTime -= 1
-//            sessionButton.setTitle("Pause Session", for: .normal)
-//            sessionButton.backgroundColor = .systemYellow
-//            pauseTapped = true
-//            startSession()
         } else if sketchCount <= 7 {
             countDownTime = 60
             sketchCount += 1
             playSound()
-//            basicAnimation() // deComment to start animation
+            basicAnimation() // deComment to start animation
         } else {
             timer.invalidate()
             sketchCount = 0
@@ -165,7 +167,6 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
             playSound()
             audioPlayer.numberOfLoops = 2
             reset()
-//            sessionButton.isEnabled = true
         }
         
 //        resetSessionButton.isHidden = true
@@ -188,10 +189,12 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         resetSessionButton.isHidden = true
         isTimerRunning = false
 //        inSession = false
+        resetAnimation(layer: shapeLayer)
+        print("reset")
     }
     
     
-    
+    // MARK:- ANIMATION
     
     func createCircularTrackLayer() {
         let center = view.center
@@ -343,10 +346,11 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 //TODO:
 // Start, Pause, Resume, Reset functionality of buttons ✅
 // Fix timer bug - tapping start session button twice makes countdown run faster ✅
-// Animation - Pause, Resume, Reset
-// Buttons - Initially only StartButton placed centrally in space below circular track, when StartButton is pressed, the Start Session and Reset buttons appear in their respective positions ✅
+// Animation - Pause, Resume, Reset ✅
+// Info Screen ✅
+// Buttons - Initially only StartButton placed centrally in space below circular track, when StartButton is pressed, the Start Session and Reset buttons appear in their respective positions
 // AutoLayout - calculate the sizes and positions of circular track and buttons and text depending on size of screen - use multipliers - so it works seamlessly on all iPhones and iPads
-// Info Screen
+// Anti-clockwise animation
 // second, microseconds, milliseconds countdown and place where sketch count presently is now - last last thing (and swap with where the seconds count is now)
 
 // future feature - settings icon top right of nav controller - change/select sounds
