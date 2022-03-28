@@ -23,10 +23,9 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     let sessionCounter: UILabel = {
         let label = UILabel()
-//        label.text = "1"
         label.textAlignment = .center
-        label.font = UIFont.boldSystemFont(ofSize: 180)
-        label.textColor = .black
+        label.font = UIFont.boldSystemFont(ofSize: 30)
+//        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
@@ -35,11 +34,21 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     let timerLabel: UILabel = {
         let label = UILabel()
 //        label.text = "\(countDownTime)"
-        label.font = UIFont.boldSystemFont(ofSize: 50)
+        label.font = UIFont.boldSystemFont(ofSize: 120)
 //        label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         
         return label
+    }()
+    
+    let startButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 20
+        button.backgroundColor = .systemGreen
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Start", for: .normal)
+        
+        return button
     }()
     
     let sessionButton: UIButton = {
@@ -48,7 +57,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         button.backgroundColor = .systemGreen
         button.translatesAutoresizingMaskIntoConstraints = false
 //        button.setTitle("Start Crazy-8 Session", for: .normal)
-        button.setTitle("Start", for: .normal)
+        button.setTitle("Pause", for: .normal)
         
         return button
     }()
@@ -62,7 +71,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         return button
     }()
     
-    var countDownTime: Double = 60.00
+    var countDownTime: Int = 60
     var sketchCount: Int = 1
     
     var resetTime = 0
@@ -79,6 +88,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     let shapeLayer = CAShapeLayer()
     let trackLayer = CAShapeLayer()
+    var pulsatingLayer: CAShapeLayer!
     
     var displayLink: CADisplayLink!
     
@@ -95,12 +105,16 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         
 //        view.backgroundColor = .black
         
+        setUpNotificationObservers()
+        
+//        pulsatingEffect()
         createCircularTrackLayer()
+//        animatePulsatingLayer()
 //        circularAnimationLayer()
         
         timerLabel.text = "\(countDownTime)"
 
-        sessionCounter.text = "\(sketchCount)"
+        sessionCounter.text = "Sketch: \(sketchCount)"
 
 //        infoLabel.text = "Crazy-8s timer"
         
@@ -110,9 +124,11 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 
 //        buttonConstraints()
 //        beforeSessionButton()
-        startSessionButton()
-        InSessionResetSessionButton()
-
+//        startSessionButton()
+//        InSessionResetSessionButton()
+        beforeSessionButton()
+        
+        startButton.addTarget(self, action: #selector(startSession), for: .touchUpInside)
         sessionButton.addTarget(self, action: #selector(startSession), for: .touchUpInside)
         
 //        resetSessionButton.isHidden = true
@@ -124,18 +140,24 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     @objc func startSession() {
-//        sessionButton.removeFromSuperview()
+//        startButton.removeFromSuperview()
+        startButton.isHidden = true
+        sessionButton.isHidden = false
+        resetSessionButton.isHidden = false
+        startSessionButton()
+        InSessionResetSessionButton()
         if isTimerRunning == false {
             if countDownTime < 60 {
                 resumeAnimation(layer: shapeLayer)
                 startTimer()
-                sessionButton.setTitle("Pause Session", for: .normal)
+                sessionButton.setTitle("Pause", for: .normal)
                 sessionButton.backgroundColor = .systemYellow
                 print("resume")
             } else {
                 startTimer()
                 basicAnimation()
-                sessionButton.setTitle("Pause Session", for: .normal)
+//                animatePulsatingLayer()
+                sessionButton.setTitle("Pause", for: .normal)
                 sessionButton.backgroundColor = .systemYellow
 //                resetSessionButton.isHidden = false
                 resetSessionButton.isEnabled = true
@@ -146,7 +168,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         } else if pauseTapped == false && isTimerRunning == true {
             timer.invalidate()
             pauseAnimation(layer: shapeLayer)
-            sessionButton.setTitle("Resume Session", for: .normal)
+            sessionButton.setTitle("Resume", for: .normal)
             sessionButton.backgroundColor = .systemGreen
 //            resetSessionButton.isHidden = false
             isTimerRunning = false
@@ -177,7 +199,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         } else {
             timer.invalidate()
             sketchCount = 0
-            sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
+            sessionButton.setTitle("Start", for: .normal)
             resetSessionButton.isHidden = true
             playSound()
             audioPlayer.numberOfLoops = 2
@@ -186,7 +208,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         
 //        resetSessionButton.isHidden = true
         timerLabel.text = "\(countDownTime)"
-        sessionCounter.text = "\(sketchCount)"
+        sessionCounter.text = "Sketch: \(sketchCount)"
 //        inSession = false
     }
     
@@ -196,13 +218,15 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         countDownTime = 60
         sketchCount = 1
         timerLabel.text = "\(countDownTime)"
-        sessionCounter.text = "\(sketchCount)"
-        sessionButton.setTitle("Start Crazy-8 Session", for: .normal)
+        sessionCounter.text = "Sketch: \(sketchCount)"
+        sessionButton.setTitle("Start", for: .normal)
         sessionButton.backgroundColor = .systemGreen
 //        startSession(startButton)
         timer.invalidate()
-//        resetSessionButton.isHidden = true
-        resetSessionButton.isEnabled = false
+        resetSessionButton.isHidden = true
+        sessionButton.isHidden = true
+        startButton.isHidden = false
+//        resetSessionButton.isEnabled = false
         isTimerRunning = false
 //        inSession = false
         resetAnimation(layer: shapeLayer)
@@ -260,6 +284,37 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         basicAnimation.isRemovedOnCompletion = true
 
         shapeLayer.add(basicAnimation, forKey: "basicAnimation")
+        
+//        animatePulsatingLayer()
+    }
+    
+    func pulsatingEffect() {
+        let center = view.center
+        
+        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
+        
+        pulsatingLayer = CAShapeLayer()
+        
+        pulsatingLayer.path = circularPath.cgPath
+        pulsatingLayer.strokeColor = UIColor.clear.cgColor
+        pulsatingLayer.lineWidth = 15
+        pulsatingLayer.fillColor = UIColor.yellow.cgColor
+        pulsatingLayer.lineCap = CAShapeLayerLineCap.round
+        view.layer.addSublayer(pulsatingLayer)
+        
+//        animatePulsatingLayer()
+    }
+    
+    func animatePulsatingLayer() {
+        let animation = CABasicAnimation(keyPath: "transform.scale")
+        
+        animation.toValue = 1.2
+        animation.duration = 0.8
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
+        animation.autoreverses = true
+        animation.repeatCount = Float.infinity
+        
+        pulsatingLayer.add(animation, forKey: "pulsingEffect")
     }
     
     // Pause circular animation
@@ -284,6 +339,17 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 //        let removeBasicAnimation = layer.removeAnimation(forKey: "basicAnimation")
         layer.removeAllAnimations()
         
+    }
+    
+    private func setUpNotificationObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleWhenInForeground), name: .NSExtensionHostWillEnterForeground, object: nil)
+    }
+    
+    @objc func handleWhenInForeground() {
+        basicAnimation()
+        startSession()
+        startTimer()
+        print("App has entered foreground")
     }
     
 
@@ -312,14 +378,14 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     func beforeSessionButton() {
 //        sessionButton.removeFromSuperview()
         sessionButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(sessionButton)
+        view.addSubview(startButton)
         
         NSLayoutConstraint.activate([
-            sessionButton.heightAnchor.constraint(equalToConstant: 50),
-            sessionButton.widthAnchor.constraint(equalToConstant: view.frame.width * 0.38),
-            sessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.31),
-            sessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.frame.width * 0.31),
-            sessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
+            startButton.heightAnchor.constraint(equalToConstant: 50),
+            startButton.widthAnchor.constraint(equalToConstant: view.frame.width * 0.38),
+            startButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.31),
+            startButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.frame.width * 0.31),
+            startButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
         ])
         
 //        sessionButton.removeFromSuperview()
@@ -333,7 +399,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
             sessionButton.heightAnchor.constraint(equalToConstant: 50),
             sessionButton.widthAnchor.constraint(equalToConstant: view.frame.width * Constants.padding),
             sessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.frame.width * 0.10),
-            sessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
+            sessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
         ])
     }
     func InSessionResetSessionButton() {
@@ -344,7 +410,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
             resetSessionButton.heightAnchor.constraint(equalToConstant: 50),
             resetSessionButton.widthAnchor.constraint(equalToConstant: view.frame.width * Constants.padding),
             resetSessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.10),
-            resetSessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50)
+            resetSessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
         ])
     }
     
@@ -390,26 +456,26 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     func addLabelConstraints() {
         
-//        view.addSubview(infoLabel)
-//        NSLayoutConstraint.activate([
-//            infoLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
-//            infoLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-//            infoLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50)
-//        ])
-        
+        //        view.addSubview(infoLabel)
+        //        NSLayoutConstraint.activate([
+        //            infoLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
+        //            infoLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+        //            infoLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50)
+        //        ])
         view.addSubview(timerLabel)
         NSLayoutConstraint.activate([
-            timerLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
-            timerLabel.heightAnchor.constraint(equalToConstant: 50),
-            timerLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.31),
-            timerLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.frame.width * 0.31)
+            timerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            timerLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
         
+        
         view.addSubview(sessionCounter)
-            NSLayoutConstraint.activate([
-                sessionCounter.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                sessionCounter.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-            ])
+        NSLayoutConstraint.activate([
+            sessionCounter.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: 5),
+            sessionCounter.heightAnchor.constraint(equalToConstant: 40),
+            sessionCounter.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.31),
+            sessionCounter.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.frame.width * 0.31)
+        ])
     }
 }
 
