@@ -245,7 +245,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 //        let center = CGPoint(x: view.frame.width * 0.5, y: view.frame.height * 0.40)
     
 //        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
-        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi + CGFloat.pi / 2, clockwise: false)
+        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: -2.5 * CGFloat.pi, clockwise: false)
 
 
         shapeLayer.path = circularPath.cgPath
@@ -264,7 +264,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         circularAnimationLayer()
         let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
 //        basicAnimation.toValue = 0.8
-        basicAnimation.toValue = 1.8
+        basicAnimation.toValue = 1
 
         basicAnimation.duration = CFTimeInterval(countDownTime) // var countDownTime: Int = 60 from above
         
