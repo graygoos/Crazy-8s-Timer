@@ -8,7 +8,7 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController, AVAudioPlayerDelegate {
+class ViewController: UIViewController {
     
     let infoLabel: UILabel = {
         let label = UILabel()
@@ -26,14 +26,16 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 30)
         label.translatesAutoresizingMaskIntoConstraints = false
+//        label.textColor = .label
         
         return label
     }()
     
-    let timerLabel: UILabel = {
+    var timerLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 120)
         label.translatesAutoresizingMaskIntoConstraints = false
+//        label.textColor = .label
         
         return label
     }()
@@ -76,6 +78,15 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     var inSession: Bool = false
     var pauseTapped: Bool = false
     
+    var startTime: Date?
+    var stopTime: Date?
+    
+    let userDefaults = UserDefaults.standard
+    
+    let START_TIME_KEY = "startTime"
+    let STOP_TIME_KEY = "stopTime"
+    let COUNTING_KEY = "countingKey"
+    
     var timer = Timer()
     
     var audioPlayer: AVAudioPlayer!
@@ -86,25 +97,47 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     let trackLayer = CAShapeLayer()
     var pulsatingLayer: CAShapeLayer!
     
+    
     var displayLink: CADisplayLink!
     
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.circularAnimationLayer()
+        circularAnimationLayer()
     }
+    
+//    private func setUpNotificationObservers() {
+//        NotificationCenter.default.addObserver(self, selector: #selector(handleWhenInForeground), name: .NSExtensionHostWillEnterForeground, object: nil)
+//    }
+//
+//    @objc func handleWhenInForeground() {
+//        basicAnimation()
+//        startSession()
+//        startTimer()
+//        print("App has entered foreground")
+//    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Crazy-8s Timer"
 //        navigationController?.navigationBar.prefersLargeTitles = true
         
-        setUpNotificationObservers()
+//        view.backgroundColor = UIColor.backgroundColor
         
-//        pulsatingEffect()
+        NotificationCenter.default.addObserver(self, selector: #selector(pauseWhenEnteringBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(backToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        
+        startTime = userDefaults.object(forKey: START_TIME_KEY) as? Date
+        stopTime = userDefaults.object(forKey: STOP_TIME_KEY) as? Date
+        isTimerRunning = userDefaults.bool(forKey: COUNTING_KEY)
+        
+//        setUpNotificationObservers()
+        
+        pulsatingEffect()
         createCircularTrackLayer()
 //        animatePulsatingLayer()
-//        circularAnimationLayer()
+        circularAnimationLayer()
         
         timerLabel.text = "\(countDownTime)"
 
@@ -127,12 +160,24 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 //        displayLink.add(to: .main, forMode: .common)
     }
     
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        pulsatingEffect()
+//    }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        pulsatingEffect()
+//    }
+    
+    
     @objc func startSession() {
         startButton.isHidden = true
         sessionButton.isHidden = false
         resetSessionButton.isHidden = false
         startSessionButton()
         InSessionResetSessionButton()
+        
         if isTimerRunning == false {
             if countDownTime < 60 {
                 resumeAnimation(layer: shapeLayer)
@@ -153,10 +198,12 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
             }
             
         } else if pauseTapped == false && isTimerRunning == true {
-            timer.invalidate()
+//            setStopTime(date: Date())
+            pauseSession()
+//            timer.invalidate()
             pauseAnimation(layer: shapeLayer)
-            sessionButton.setTitle("Resume", for: .normal)
-            sessionButton.backgroundColor = .systemGreen
+//            sessionButton.setTitle("Resume", for: .normal)
+//            sessionButton.backgroundColor = .systemGreen
 //            resetSessionButton.isHidden = false
             isTimerRunning = false
             print("pause")
@@ -176,6 +223,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     
     @objc func session() {
+        
         if countDownTime > 0 {
             countDownTime -= 1
         } else if sketchCount <= 7 {
@@ -184,12 +232,14 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
             playSound()
             basicAnimation() // deComment to start animation
         } else {
+//            pauseSession()
             timer.invalidate()
             sketchCount = 0
             sessionButton.setTitle("Start", for: .normal)
             resetSessionButton.isHidden = true
             playSound()
             audioPlayer.numberOfLoops = 2
+            print("Crazy-8s session ended")
             reset()
         }
         
@@ -220,146 +270,57 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         print("reset")
     }
     
-    
-    // MARK: Animation
-    
-    func createCircularTrackLayer() {
-        let center = view.center
-//        let center = CGPoint(x: view.frame.width * 0.5, y: view.frame.height * 0.40)
-        
-        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
-        
-        trackLayer.path = circularPath.cgPath
-        trackLayer.strokeColor = UIColor.lightGray.cgColor
-        trackLayer.lineWidth = 15
-        trackLayer.fillColor = UIColor.clear.cgColor
-//        trackLayer.lineCap = CAShapeLayerLineCap.round
-        
-//        shapeLayer.strokeEnd = 0
-        
-        view.layer.addSublayer(trackLayer)
+    func pauseSession() {
+        timer.invalidate()
+//        pauseAnimation(layer: shapeLayer)
+        isTimerRunning = false
+        sessionButton.setTitle("Resume", for: .normal)
+        sessionButton.backgroundColor = .systemGreen
     }
     
-    func circularAnimationLayer() {
-        let center = view.center
-//        let center = CGPoint(x: view.frame.width * 0.5, y: view.frame.height * 0.40)
-    
-//        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
-        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: -2.5 * CGFloat.pi, clockwise: false)
-
-
-        shapeLayer.path = circularPath.cgPath
-        shapeLayer.lineWidth = 20
-        shapeLayer.fillColor = UIColor.clear.cgColor
-//        shapeLayer.strokeEnd = 0
-        shapeLayer.strokeEnd = 0
-        shapeLayer.lineCap = CAShapeLayerLineCap.round
-        shapeLayer.strokeColor = UIColor.blue.cgColor
+    @objc func pauseWhenEnteringBackground() {
         
-        trackLayer.addSublayer(shapeLayer)
-    }
-    
-    
-    func basicAnimation() {
-        circularAnimationLayer()
-        let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
-//        basicAnimation.toValue = 0.8
-        basicAnimation.toValue = 1
-
-        basicAnimation.duration = CFTimeInterval(countDownTime) // var countDownTime: Int = 60 from above
-        
-        basicAnimation.fillMode = CAMediaTimingFillMode.forwards
-//        basicAnimation.fillMode = CAMediaTimingFillMode.backwards
-
-        basicAnimation.isRemovedOnCompletion = true
-
-        shapeLayer.add(basicAnimation, forKey: "basicAnimation")
-    }
-    
-    func pulsatingEffect() {
-        let center = view.center
-        
-        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
-        
-        pulsatingLayer = CAShapeLayer()
-        
-        pulsatingLayer.path = circularPath.cgPath
-        pulsatingLayer.strokeColor = UIColor.clear.cgColor
-        pulsatingLayer.lineWidth = 15
-        pulsatingLayer.fillColor = UIColor.yellow.cgColor
-        pulsatingLayer.lineCap = CAShapeLayerLineCap.round
-        view.layer.addSublayer(pulsatingLayer)
-        
-//        animatePulsatingLayer()
-    }
-    
-    func animatePulsatingLayer() {
-        let animation = CABasicAnimation(keyPath: "transform.scale")
-        
-        animation.toValue = 1.2
-        animation.duration = 0.8
-        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
-        animation.autoreverses = true
-        animation.repeatCount = Float.infinity
-        
-        pulsatingLayer.add(animation, forKey: "pulsingEffect")
-    }
-    
-    // Pause circular animation
-    func pauseAnimation(layer: CAShapeLayer) {
-        let paused: CFTimeInterval = layer.convertTime(CACurrentMediaTime(), from: nil)
-        layer.speed = 0.0
-        layer.timeOffset = paused
-    }
-    
-    // resume circular animation
-    func resumeAnimation(layer: CAShapeLayer) {
-        let paused = layer.timeOffset
-        layer.speed = 1.0
-        layer.timeOffset = 0.0
-        layer.beginTime = 0.0
-        let timeSincePause = layer.convertTime(CACurrentMediaTime(), from: nil) - paused
-        layer.beginTime = timeSincePause
-    }
-    
-    // reset circular animation
-    func resetAnimation(layer: CAShapeLayer) {
-//        let removeBasicAnimation = layer.removeAnimation(forKey: "basicAnimation")
-        layer.removeAllAnimations()
+        pauseAnimation(layer: shapeLayer)
+//        basicAnimation()
+        pauseSession()
+        print("Entered background, paused app")
         
     }
     
-    private func setUpNotificationObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleWhenInForeground), name: .NSExtensionHostWillEnterForeground, object: nil)
+    @objc func backToForeground() {
+//        circularAnimationLayer()
+//        pulsatingEffect()
+        resumeAnimation(layer: shapeLayer)
     }
     
-    @objc func handleWhenInForeground() {
-        basicAnimation()
-        startSession()
-        startTimer()
-        print("App has entered foreground")
+    
+    // MARK: functions updating UserDefaults
+    func setStartTime(date: Date?) {
+        startTime = date
+        userDefaults.set(startTime, forKey: START_TIME_KEY)
     }
     
-
-    
-    // MARK: Play Sound
-    
-    func playSound() {
-        let soundURL = Bundle.main.url(forResource: selectedSoundFileName, withExtension: "wav")
-
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: soundURL!)
-        }
-        catch {
-            print(error)
-        }
-
-        audioPlayer.play()
+    func setStopTime(date: Date?) {
+        stopTime = date
+        userDefaults.set(stopTime, forKey: STOP_TIME_KEY)
     }
+    
+    func setTimerCounting(_ val: Bool) {
+        isTimerRunning = val
+        userDefaults.set(isTimerRunning, forKey: COUNTING_KEY)
+    }
+    
+    func calculateRestartTime(start: Date, stop: Date) -> Date {
+        let diff = start.timeIntervalSince(stop)
+        return Date().addingTimeInterval(diff)
+//        return Date().(==(lhs: Date, rhs:diff))
+    }
+     
     
     private enum Constants {
         static let padding: CGFloat = 0.35
     }
+
     
     // MARK: Auto Layout / Constraints
     
@@ -431,14 +392,21 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 // Fix timer bug - tapping start session button twice makes countdown run faster ✅
 // Animation - Pause, Resume, Reset ✅
 // Info Screen ✅
-// Buttons - Initially only StartButton placed centrally in space below circular track, when StartButton is pressed, the Start Session and Reset buttons appear in their respective positions
-// AutoLayout - calculate the sizes and positions of circular track and buttons and text depending on size of screen - use multipliers - so it works seamlessly on all iPhones and iPads
-// Pulsing circular animation
+// Buttons - Initially only StartButton placed centrally in space below circular track, when StartButton is pressed, the Start Session and Reset buttons appear in their respective positions ✅
+// AutoLayout - calculate the sizes and positions of circular track and buttons and text depending on size of screen - use multipliers - so it works seamlessly on all iPhones and iPads ✅
+// Pulsing circular animation ✅
 // CADisplayLink for circular animation
-// Anti-clockwise animation
-// second, microseconds, milliseconds countdown and place where sketch count presently is now - last last thing (and swap with where the seconds count is now)
+// Anti-clockwise animation ✅
+// 11/05/2022
+// pause app - timer and animation immediately app enters background (change button functionality)
+// animation/timer/session continues from where it paused when it entered background when brought back to foreground
+// when app is in the foreground, the phone screen does not sleep/close till after the entire session is done
+// pulsing animation working when brought back from the background - lifecycle methods?
 
-// future feature - settings icon top right of nav controller - change/select sounds
+// add functionality of continuing in background for future version and also to strengthen my skills:-
+// make app work in the background and chime every 60 seconds, continue session even if app is closed but not paused and send notification when session is done
+// when in foreground and screen closed or not, show notification when done and/or every 60 seconds
+
 
 
 // Pause timer, reset timer, toggle button title (text)/function and color✅
@@ -456,6 +424,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
  -  Button to change 2 times: Start Crazy-8 Session, Pause Session
  -  Fix the design, make compatible with all iPhones and iPads
  -  light mode, dark mode support
+ -  settings icon top right of nav controller - change/select sounds, change/select themes
  */
 
 /*
