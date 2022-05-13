@@ -128,9 +128,7 @@ class ViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(pauseWhenEnteringBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(backToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         
-        startTime = userDefaults.object(forKey: START_TIME_KEY) as? Date
-        stopTime = userDefaults.object(forKey: STOP_TIME_KEY) as? Date
-        isTimerRunning = userDefaults.bool(forKey: COUNTING_KEY)
+//        UIApplication.shared.isIdleTimerDisabled = true
         
 //        setUpNotificationObservers()
         
@@ -177,6 +175,7 @@ class ViewController: UIViewController {
         resetSessionButton.isHidden = false
         startSessionButton()
         InSessionResetSessionButton()
+        UIApplication.shared.isIdleTimerDisabled = true
         
         if isTimerRunning == false {
             if countDownTime < 60 {
@@ -267,7 +266,9 @@ class ViewController: UIViewController {
         isTimerRunning = false
 //        inSession = false
         resetAnimation(layer: shapeLayer)
+        UIApplication.shared.isIdleTimerDisabled = false
         print("reset")
+        
     }
     
     func pauseSession() {

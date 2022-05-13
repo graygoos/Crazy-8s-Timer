@@ -66,10 +66,7 @@ extension ViewController {
     func pulsatingEffect() {
 //        let center = view.center
         
-//        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: -(CGFloat.pi / 2) + (2 * CGFloat.pi), clockwise: true)
-//        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi, clockwise: true)
         let circularPath = UIBezierPath(arcCenter: .zero, radius: view.frame.width * 0.40, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
-//        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: -2.5 * CGFloat.pi, clockwise: false)
         
         pulsatingLayer = CAShapeLayer()
         
