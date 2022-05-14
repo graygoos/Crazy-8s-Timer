@@ -267,6 +267,7 @@ class ViewController: UIViewController {
 //        inSession = false
         resetAnimation(layer: shapeLayer)
         UIApplication.shared.isIdleTimerDisabled = false
+        UIDevice.vibrate()
         print("reset")
         
     }
@@ -348,6 +349,8 @@ class ViewController: UIViewController {
             sessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.frame.width * 0.10),
             sessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
         ])
+        
+        UIDevice.vibrate()
     }
     
     
@@ -361,6 +364,8 @@ class ViewController: UIViewController {
             resetSessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.10),
             resetSessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
         ])
+        
+        UIDevice.vibrate()
     }
 
     

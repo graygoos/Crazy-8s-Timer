@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AudioToolbox
 
 extension UIColor {
     
@@ -15,4 +16,10 @@ extension UIColor {
     
 //    static let backgroundColor = UIColor(red: 21/255, green: 22/255, blue: 33/255, alpha: 1)
     
+}
+
+extension UIDevice {
+    static func vibrate() {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    }
 }
