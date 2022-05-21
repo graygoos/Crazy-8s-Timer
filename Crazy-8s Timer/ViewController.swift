@@ -8,6 +8,7 @@
 import UIKit
 import AVFoundation
 
+
 class ViewController: UIViewController {
     
     let infoLabel: UILabel = {
@@ -26,7 +27,6 @@ class ViewController: UIViewController {
         label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 30)
         label.translatesAutoresizingMaskIntoConstraints = false
-//        label.textColor = .label
         
         return label
     }()
@@ -35,7 +35,6 @@ class ViewController: UIViewController {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 120)
         label.translatesAutoresizingMaskIntoConstraints = false
-//        label.textColor = .label
         
         return label
     }()
@@ -78,15 +77,6 @@ class ViewController: UIViewController {
     var inSession: Bool = false
     var pauseTapped: Bool = false
     
-    var startTime: Date?
-    var stopTime: Date?
-    
-    let userDefaults = UserDefaults.standard
-    
-    let START_TIME_KEY = "startTime"
-    let STOP_TIME_KEY = "stopTime"
-    let COUNTING_KEY = "countingKey"
-    
     var timer = Timer()
     
     var audioPlayer: AVAudioPlayer!
@@ -96,6 +86,7 @@ class ViewController: UIViewController {
     let shapeLayer = CAShapeLayer()
     let trackLayer = CAShapeLayer()
     var pulsatingLayer: CAShapeLayer!
+    var circularAnimationPosition: CAShapeLayer!
     
     
     var displayLink: CADisplayLink!
@@ -104,37 +95,21 @@ class ViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         circularAnimationLayer()
+        shapeLayer.makeAnimationPersistent()
     }
     
-//    private func setUpNotificationObservers() {
-//        NotificationCenter.default.addObserver(self, selector: #selector(handleWhenInForeground), name: .NSExtensionHostWillEnterForeground, object: nil)
-//    }
-//
-//    @objc func handleWhenInForeground() {
-//        basicAnimation()
-//        startSession()
-//        startTimer()
-//        print("App has entered foreground")
-//    }
-    
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         navigationItem.title = "Crazy-8s Timer"
-//        navigationController?.navigationBar.prefersLargeTitles = true
-        
-//        view.backgroundColor = UIColor.backgroundColor
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(pauseWhenEnteringBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(backToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         
-//        UIApplication.shared.isIdleTimerDisabled = true
-        
-//        setUpNotificationObservers()
-        
         pulsatingEffect()
         createCircularTrackLayer()
-//        animatePulsatingLayer()
         circularAnimationLayer()
         
         timerLabel.text = "\(countDownTime)"
@@ -142,15 +117,12 @@ class ViewController: UIViewController {
         sessionCounter.text = "Sketch: \(sketchCount)"
         
         addLabelConstraints()
-//        addSessionButtonConstraints()
-//        addResetSessionButtonConstraints()
 
         beforeSessionButton()
         
         startButton.addTarget(self, action: #selector(startSession), for: .touchUpInside)
         sessionButton.addTarget(self, action: #selector(startSession), for: .touchUpInside)
         
-//        resetSessionButton.isHidden = true
         resetSessionButton.addTarget(self, action: #selector(reset), for: .touchUpInside)
         resetSessionButton.setTitle("Reset", for: .normal)
         
@@ -158,15 +130,11 @@ class ViewController: UIViewController {
 //        displayLink.add(to: .main, forMode: .common)
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        pulsatingEffect()
-//    }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        pulsatingEffect()
-//    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        pulsatingLayer.makeAnimationPersistent()
+    }
     
     
     @objc func startSession() {
@@ -179,7 +147,8 @@ class ViewController: UIViewController {
         
         if isTimerRunning == false {
             if countDownTime < 60 {
-                resumeAnimation(layer: shapeLayer)
+
+                shapeLayer.resumeAnimation()
                 startTimer()
                 sessionButton.setTitle("Pause", for: .normal)
                 sessionButton.backgroundColor = .systemYellow
@@ -187,33 +156,23 @@ class ViewController: UIViewController {
             } else {
                 startTimer()
                 basicAnimation()
-//                animatePulsatingLayer()
                 sessionButton.setTitle("Pause", for: .normal)
                 sessionButton.backgroundColor = .systemYellow
-//                resetSessionButton.isHidden = false
                 resetSessionButton.isEnabled = true
                 isTimerRunning = true
                 print("start")
             }
             
         } else if pauseTapped == false && isTimerRunning == true {
-//            setStopTime(date: Date())
             pauseSession()
-//            timer.invalidate()
-            pauseAnimation(layer: shapeLayer)
-//            sessionButton.setTitle("Resume", for: .normal)
-//            sessionButton.backgroundColor = .systemGreen
-//            resetSessionButton.isHidden = false
+            shapeLayer.pauseAnimation()
             isTimerRunning = false
             print("pause")
-//            pauseTapped = false
         }
     }
     
     
     @objc func startTimer() {
-//        startSession()
-//        basicAnimation() // deComment to start animation
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(session), userInfo: nil, repeats: true)
 //        let displayLink = CADisplayLink(target: self, selector: #selector(session))
 //        displayLink.add(to: .current, forMode: .common)
@@ -222,7 +181,6 @@ class ViewController: UIViewController {
     
     
     @objc func session() {
-        
         if countDownTime > 0 {
             countDownTime -= 1
         } else if sketchCount <= 7 {
@@ -231,7 +189,6 @@ class ViewController: UIViewController {
             playSound()
             basicAnimation() // deComment to start animation
         } else {
-//            pauseSession()
             timer.invalidate()
             sketchCount = 0
             sessionButton.setTitle("Start", for: .normal)
@@ -242,10 +199,8 @@ class ViewController: UIViewController {
             reset()
         }
         
-//        resetSessionButton.isHidden = true
         timerLabel.text = "\(countDownTime)"
         sessionCounter.text = "Sketch: \(sketchCount)"
-//        inSession = false
     }
     
     
@@ -257,14 +212,11 @@ class ViewController: UIViewController {
         sessionCounter.text = "Sketch: \(sketchCount)"
         sessionButton.setTitle("Start", for: .normal)
         sessionButton.backgroundColor = .systemGreen
-//        startSession(startButton)
         timer.invalidate()
         resetSessionButton.isHidden = true
         sessionButton.isHidden = true
         startButton.isHidden = false
-//        resetSessionButton.isEnabled = false
         isTimerRunning = false
-//        inSession = false
         resetAnimation(layer: shapeLayer)
         UIApplication.shared.isIdleTimerDisabled = false
         UIDevice.vibrate()
@@ -272,57 +224,35 @@ class ViewController: UIViewController {
         
     }
     
+    
     func pauseSession() {
         timer.invalidate()
-//        pauseAnimation(layer: shapeLayer)
         isTimerRunning = false
         sessionButton.setTitle("Resume", for: .normal)
         sessionButton.backgroundColor = .systemGreen
+        
     }
+    
+    
     
     @objc func pauseWhenEnteringBackground() {
-        
-        pauseAnimation(layer: shapeLayer)
-//        basicAnimation()
+        shapeLayer.pauseAnimation()
         pauseSession()
         print("Entered background, paused app")
-        
     }
+    
     
     @objc func backToForeground() {
-//        circularAnimationLayer()
-//        pulsatingEffect()
-        resumeAnimation(layer: shapeLayer)
+        shapeLayer.pauseAnimation()
     }
     
     
-    // MARK: functions updating UserDefaults
-    func setStartTime(date: Date?) {
-        startTime = date
-        userDefaults.set(startTime, forKey: START_TIME_KEY)
-    }
-    
-    func setStopTime(date: Date?) {
-        stopTime = date
-        userDefaults.set(stopTime, forKey: STOP_TIME_KEY)
-    }
-    
-    func setTimerCounting(_ val: Bool) {
-        isTimerRunning = val
-        userDefaults.set(isTimerRunning, forKey: COUNTING_KEY)
-    }
-    
-    func calculateRestartTime(start: Date, stop: Date) -> Date {
-        let diff = start.timeIntervalSince(stop)
-        return Date().addingTimeInterval(diff)
-//        return Date().(==(lhs: Date, rhs:diff))
-    }
-     
     
     private enum Constants {
         static let padding: CGFloat = 0.35
     }
-
+    
+    
     
     // MARK: Auto Layout / Constraints
     
@@ -391,6 +321,77 @@ class ViewController: UIViewController {
 }
 
 
+public class LayerPersistentHelper {
+    private var persistentAnimations: [String: CAAnimation] = [:]
+    private var persistentSpeed: Float = 0.0
+    private weak var layer: CAShapeLayer?
+    
+    public init(with layer: CAShapeLayer) {
+        self.layer = layer
+        addNotificationObservers()
+    }
+    
+    deinit {
+        removeNotificationObservers()
+    }
+}
+
+
+extension LayerPersistentHelper {
+    func addNotificationObservers() {
+        let center = NotificationCenter.default
+        let enterForeground = UIApplication.willEnterForegroundNotification
+        let enterBackground = UIApplication.didEnterBackgroundNotification
+        center.addObserver(self, selector: #selector(didBecomeActive), name: enterForeground, object: nil)
+        center.addObserver(self, selector: #selector(willResignActive), name: enterBackground, object: nil)
+    }
+    
+    func removeNotificationObservers() {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    func persistAnimation(with keys: [String]?) {
+        guard let layer = self.layer else { return }
+        keys?.forEach { (key) in
+            if let animation = layer.animation(forKey: key) {
+                persistentAnimations[key] = animation
+            }
+        }
+    }
+    
+    func restoreAnimation(with keys: [String]?) {
+        guard let layer = self.layer else { return }
+        keys?.forEach { (key) in
+            if let animation = persistentAnimations[key] {
+                layer.add(animation, forKey: key)
+            }
+        }
+    }
+}
+
+
+@objc extension LayerPersistentHelper {
+    func didBecomeActive() {
+        guard let layer = self.layer else { return }
+        restoreAnimation(with: Array(persistentAnimations.keys))
+        persistentAnimations.removeAll()
+        if persistentSpeed == 1.0 { // if layer was playing before background, resume it
+            layer.resumeAnimation()
+        }
+    }
+    
+    func willResignActive() {
+        guard let layer = self.layer else { return }
+        persistentSpeed = layer.speed
+        layer.speed = 1.0 // in case layer was paused from outside, set speed to 1.0 to get all animations
+        persistAnimation(with: layer.animationKeys())
+        layer.speed = persistentSpeed // restore original speed
+        layer.pauseAnimation()
+    }
+}
+
+
+
 // MARK: NOTES
 
 //TODO:
@@ -404,14 +405,15 @@ class ViewController: UIViewController {
 // CADisplayLink for circular animation
 // Anti-clockwise animation ✅
 // 11/05/2022
-// pause app - timer and animation immediately app enters background (change button functionality)
+// pause app - timer and animation immediately app enters background (change button functionality)✅
 // animation/timer/session continues from where it paused when it entered background when brought back to foreground
-// when app is in the foreground, the phone screen does not sleep/close till after the entire session is done
+// when app is in the foreground, the phone screen does not sleep/close till after the entire session is done ✅
 // pulsing animation working when brought back from the background - lifecycle methods?
 
 // add functionality of continuing in background for future version and also to strengthen my skills:-
 // make app work in the background and chime every 60 seconds, continue session even if app is closed but not paused and send notification when session is done
 // when in foreground and screen closed or not, show notification when done and/or every 60 seconds
+// remove haptic feedback from settings screen
 
 
 

@@ -8,6 +8,7 @@
 import UIKit
 import AudioToolbox
 
+
 extension UIColor {
     
     static let pulsingColor: CGColor = UIColor(red: 0, green: 0.75, blue: 1, alpha: 1).cgColor
@@ -18,8 +19,47 @@ extension UIColor {
     
 }
 
+
 extension UIDevice {
     static func vibrate() {
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    }
+}
+
+
+public extension CAShapeLayer {
+    var isAnimationPaused: Bool {
+        return speed == 0.0
+    }
+
+    func pauseAnimation() {
+        if !isAnimationPaused {
+            let currentTime = CACurrentMediaTime()
+            let pausedTime = convertTime(currentTime, from: nil)
+            speed = 0.0
+            timeOffset = pausedTime
+        }
+    }
+
+    func resumeAnimation() {
+        let pausedTime = timeOffset
+        speed = 1.0
+        timeOffset = 0.0
+        beginTime = 0.0
+        let currentTime = CACurrentMediaTime()
+        let timeSincePause = convertTime(currentTime, from: nil) - pausedTime
+        beginTime = timeSincePause
+    }
+    
+    
+    static private var persistentHelperKey = "CAShapeLayer.LayerPersistentHelper"
+    
+    func makeAnimationPersistent() {
+        var object = objc_getAssociatedObject(self, &CAShapeLayer.persistentHelperKey)
+        if object == nil {
+            object = LayerPersistentHelper(with: self)
+            let nonatomic = objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            objc_setAssociatedObject(self, &CAShapeLayer.persistentHelperKey, object, nonatomic)
+        }
     }
 }
