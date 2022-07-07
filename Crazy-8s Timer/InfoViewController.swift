@@ -19,8 +19,8 @@ Happy sketching! 👍🏽
     let infoTextLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .justified
-        label.font = UIFont.systemFont(ofSize: 20)
-//        label.textColor = .systemBlue
+        label.font = UIFont.preferredFont(forTextStyle: .body)
+        label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         

@@ -11,6 +11,10 @@ import AVFoundation
 
 class ViewController: UIViewController {
     
+    let startCrazy8sSession = C8Button(backgroundColor: .systemGreen, title: "Start")
+    let c8SessionButton = C8Button(backgroundColor: .systemGreen, title: "Pause")
+    let resetC8Button = C8Button(backgroundColor: .systemRed, title: "Reset")
+    
     let infoLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemBrown
@@ -111,6 +115,7 @@ class ViewController: UIViewController {
         pulsatingEffect()
         createCircularTrackLayer()
         circularAnimationLayer()
+        shapeLayer.makeAnimationPersistent()
         
         timerLabel.text = "\(countDownTime)"
 
@@ -133,8 +138,19 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        circularAnimationLayer()
+        shapeLayer.makeAnimationPersistent()
         pulsatingLayer.makeAnimationPersistent()
+        
+//        if countDownTime == 60 && isTimerRunning == false && pauseTapped {
+//            basicAnimation()
+//        }
     }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        shapeLayer.makeAnimationPersistent()
+//    }
     
     
     @objc func startSession() {
@@ -144,10 +160,10 @@ class ViewController: UIViewController {
         startSessionButton()
         InSessionResetSessionButton()
         UIApplication.shared.isIdleTimerDisabled = true
+        shapeLayer.makeAnimationPersistent()
         
         if isTimerRunning == false {
             if countDownTime < 60 {
-
                 shapeLayer.resumeAnimation()
                 startTimer()
                 sessionButton.setTitle("Pause", for: .normal)
@@ -162,7 +178,6 @@ class ViewController: UIViewController {
                 isTimerRunning = true
                 print("start")
             }
-            
         } else if pauseTapped == false && isTimerRunning == true {
             pauseSession()
             shapeLayer.pauseAnimation()
@@ -174,6 +189,7 @@ class ViewController: UIViewController {
     
     @objc func startTimer() {
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(session), userInfo: nil, repeats: true)
+        RunLoop.current.add(timer, forMode: .common)
 //        let displayLink = CADisplayLink(target: self, selector: #selector(session))
 //        displayLink.add(to: .current, forMode: .common)
         isTimerRunning = true
@@ -227,15 +243,17 @@ class ViewController: UIViewController {
     
     func pauseSession() {
         timer.invalidate()
+        shapeLayer.pauseAnimation()
         isTimerRunning = false
         sessionButton.setTitle("Resume", for: .normal)
         sessionButton.backgroundColor = .systemGreen
         
     }
     
-    
+    // MARK: Background and foreground methods
     
     @objc func pauseWhenEnteringBackground() {
+//        shapeLayer.makeAnimationPersistent()
         shapeLayer.pauseAnimation()
         pauseSession()
         print("Entered background, paused app")
@@ -243,18 +261,30 @@ class ViewController: UIViewController {
     
     
     @objc func backToForeground() {
-        shapeLayer.pauseAnimation()
+//        shapeLayer.makeAnimationPersistent()
+        
+        if countDownTime < 60 {
+            shapeLayer.pauseAnimation()
+        } else if countDownTime == 60 && !isTimerRunning {
+            basicAnimation()
+        } else if shapeLayer.isAnimationPaused && pauseTapped {
+            shapeLayer.pauseAnimation()
+        } else {
+            shapeLayer.resumeAnimation()
+        }
+        
+//        if countDownTime == 60 && isTimerRunning == false {
+//            basicAnimation()
+//        }
     }
     
     
+    // MARK: Auto Layout / Constraints
     
     private enum Constants {
         static let padding: CGFloat = 0.35
     }
     
-    
-    
-    // MARK: Auto Layout / Constraints
     
     func beforeSessionButton() {
         sessionButton.translatesAutoresizingMaskIntoConstraints = false
@@ -406,9 +436,9 @@ extension LayerPersistentHelper {
 // Anti-clockwise animation ✅
 // 11/05/2022
 // pause app - timer and animation immediately app enters background (change button functionality)✅
-// animation/timer/session continues from where it paused when it entered background when brought back to foreground
+// animation/timer/session continues from where it paused when it entered background when brought back to foreground ✅
 // when app is in the foreground, the phone screen does not sleep/close till after the entire session is done ✅
-// pulsing animation working when brought back from the background - lifecycle methods?
+// pulsing animation working when brought back from the background ✅
 
 // add functionality of continuing in background for future version and also to strengthen my skills:-
 // make app work in the background and chime every 60 seconds, continue session even if app is closed but not paused and send notification when session is done

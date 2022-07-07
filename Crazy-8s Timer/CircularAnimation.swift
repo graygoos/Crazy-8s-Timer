@@ -109,6 +109,7 @@ extension ViewController {
         let timeSincePause = layer.convertTime(CACurrentMediaTime(), from: nil) - paused
         layer.beginTime = timeSincePause
     }
+   */
     
     // reset circular animation
     func resetAnimation(layer: CAShapeLayer) {
@@ -116,7 +117,7 @@ extension ViewController {
         layer.removeAllAnimations()
         
     }
-   */
+
     
 }
 
