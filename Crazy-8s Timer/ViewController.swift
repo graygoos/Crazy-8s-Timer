@@ -15,62 +15,9 @@ class ViewController: UIViewController {
     let c8SessionButton = C8Button(backgroundColor: .systemGreen, title: "Pause")
     let resetC8Button = C8Button(backgroundColor: .systemRed, title: "Reset")
     
-    let infoLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .systemBrown
-        label.font = UIFont.boldSystemFont(ofSize: 40)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        return label
-    }()
+    let sessionCounter = C8Label(textAlignment: .center, fontSize: 30)
+    let timerLabel = C8Label(textAlignment: .center, fontSize: 120)
     
-    let sessionCounter: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.font = UIFont.boldSystemFont(ofSize: 30)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        return label
-    }()
-    
-    var timerLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 120)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        return label
-    }()
-    
-    let startButton: UIButton = {
-        let button = UIButton()
-        button.layer.cornerRadius = 20
-        button.backgroundColor = .systemGreen
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Start", for: .normal)
-        
-        return button
-    }()
-    
-    let sessionButton: UIButton = {
-        let button = UIButton()
-        button.layer.cornerRadius = 20
-        button.backgroundColor = .systemGreen
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Pause", for: .normal)
-        
-        return button
-    }()
-    
-    let resetSessionButton: UIButton = {
-        let button = UIButton()
-        button.layer.cornerRadius = 20
-        button.backgroundColor = .systemRed
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        return button
-    }()
     
     var countDownTime: Int = 60
     var sketchCount: Int = 1
@@ -125,11 +72,11 @@ class ViewController: UIViewController {
 
         beforeSessionButton()
         
-        startButton.addTarget(self, action: #selector(startSession), for: .touchUpInside)
-        sessionButton.addTarget(self, action: #selector(startSession), for: .touchUpInside)
+        startCrazy8sSession.addTarget(self, action: #selector(startSession), for: .touchUpInside)
+        c8SessionButton.addTarget(self, action: #selector(startSession), for: .touchUpInside)
         
-        resetSessionButton.addTarget(self, action: #selector(reset), for: .touchUpInside)
-        resetSessionButton.setTitle("Reset", for: .normal)
+        resetC8Button.addTarget(self, action: #selector(reset), for: .touchUpInside)
+        resetC8Button.setTitle("Reset", for: .normal)
         
 //        displayLink = CADisplayLink(target: self, selector: #selector(basicAnimation))
 //        displayLink.add(to: .main, forMode: .common)
@@ -154,9 +101,9 @@ class ViewController: UIViewController {
     
     
     @objc func startSession() {
-        startButton.isHidden = true
-        sessionButton.isHidden = false
-        resetSessionButton.isHidden = false
+        startCrazy8sSession.isHidden = true
+        c8SessionButton.isHidden = false
+        resetC8Button.isHidden = false
         startSessionButton()
         InSessionResetSessionButton()
         UIApplication.shared.isIdleTimerDisabled = true
@@ -166,15 +113,15 @@ class ViewController: UIViewController {
             if countDownTime < 60 {
                 shapeLayer.resumeAnimation()
                 startTimer()
-                sessionButton.setTitle("Pause", for: .normal)
-                sessionButton.backgroundColor = .systemYellow
+                c8SessionButton.setTitle("Pause", for: .normal)
+                c8SessionButton.backgroundColor = .systemYellow
                 print("resume")
             } else {
                 startTimer()
                 basicAnimation()
-                sessionButton.setTitle("Pause", for: .normal)
-                sessionButton.backgroundColor = .systemYellow
-                resetSessionButton.isEnabled = true
+                c8SessionButton.setTitle("Pause", for: .normal)
+                c8SessionButton.backgroundColor = .systemYellow
+                resetC8Button.isEnabled = true
                 isTimerRunning = true
                 print("start")
             }
@@ -207,8 +154,8 @@ class ViewController: UIViewController {
         } else {
             timer.invalidate()
             sketchCount = 0
-            sessionButton.setTitle("Start", for: .normal)
-            resetSessionButton.isHidden = true
+            c8SessionButton.setTitle("Start", for: .normal)
+            resetC8Button.isHidden = true
             playSound()
             audioPlayer.numberOfLoops = 2
             print("Crazy-8s session ended")
@@ -226,12 +173,12 @@ class ViewController: UIViewController {
         sketchCount = 1
         timerLabel.text = "\(countDownTime)"
         sessionCounter.text = "Sketch: \(sketchCount)"
-        sessionButton.setTitle("Start", for: .normal)
-        sessionButton.backgroundColor = .systemGreen
+        c8SessionButton.setTitle("Start", for: .normal)
+        c8SessionButton.backgroundColor = .systemGreen
         timer.invalidate()
-        resetSessionButton.isHidden = true
-        sessionButton.isHidden = true
-        startButton.isHidden = false
+        resetC8Button.isHidden = true
+        c8SessionButton.isHidden = true
+        startCrazy8sSession.isHidden = false
         isTimerRunning = false
         resetAnimation(layer: shapeLayer)
         UIApplication.shared.isIdleTimerDisabled = false
@@ -245,8 +192,8 @@ class ViewController: UIViewController {
         timer.invalidate()
         shapeLayer.pauseAnimation()
         isTimerRunning = false
-        sessionButton.setTitle("Resume", for: .normal)
-        sessionButton.backgroundColor = .systemGreen
+        c8SessionButton.setTitle("Resume", for: .normal)
+        c8SessionButton.backgroundColor = .systemGreen
         
     }
     
@@ -287,27 +234,27 @@ class ViewController: UIViewController {
     
     
     func beforeSessionButton() {
-        sessionButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(startButton)
+        startCrazy8sSession.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(startCrazy8sSession)
         
         NSLayoutConstraint.activate([
-            startButton.heightAnchor.constraint(equalToConstant: 50),
-            startButton.widthAnchor.constraint(equalToConstant: view.frame.width * 0.38),
-            startButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.31),
-            startButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
+            startCrazy8sSession.heightAnchor.constraint(equalToConstant: 50),
+            startCrazy8sSession.widthAnchor.constraint(equalToConstant: view.frame.width * 0.38),
+            startCrazy8sSession.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.31),
+            startCrazy8sSession.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
         ])
     }
     
     
     func startSessionButton() {
-        sessionButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(sessionButton)
+        c8SessionButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(c8SessionButton)
         
         NSLayoutConstraint.activate([
-            sessionButton.heightAnchor.constraint(equalToConstant: 50),
-            sessionButton.widthAnchor.constraint(equalToConstant: view.frame.width * Constants.padding),
-            sessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.frame.width * 0.10),
-            sessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
+            c8SessionButton.heightAnchor.constraint(equalToConstant: 50),
+            c8SessionButton.widthAnchor.constraint(equalToConstant: view.frame.width * Constants.padding),
+            c8SessionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.frame.width * 0.10),
+            c8SessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
         ])
         
         UIDevice.vibrate()
@@ -315,14 +262,14 @@ class ViewController: UIViewController {
     
     
     func InSessionResetSessionButton() {
-        resetSessionButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(resetSessionButton)
+        resetC8Button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(resetC8Button)
         
         NSLayoutConstraint.activate([
-            resetSessionButton.heightAnchor.constraint(equalToConstant: 50),
-            resetSessionButton.widthAnchor.constraint(equalToConstant: view.frame.width * Constants.padding),
-            resetSessionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.10),
-            resetSessionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
+            resetC8Button.heightAnchor.constraint(equalToConstant: 50),
+            resetC8Button.widthAnchor.constraint(equalToConstant: view.frame.width * Constants.padding),
+            resetC8Button.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.frame.width * 0.10),
+            resetC8Button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
         ])
         
         UIDevice.vibrate()
@@ -350,6 +297,8 @@ class ViewController: UIViewController {
     }
 }
 
+
+    // MARK:- Persisting circular animation
 
 public class LayerPersistentHelper {
     private var persistentAnimations: [String: CAAnimation] = [:]

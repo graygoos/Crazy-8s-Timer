@@ -25,7 +25,7 @@ class C8Button: UIButton {
     }
     
     private func configure() {
-        layer.cornerRadius = 10
+        layer.cornerRadius = 20
         titleLabel?.textColor = .white
         titleLabel?.font = UIFont.preferredFont(forTextStyle: .headline)
         translatesAutoresizingMaskIntoConstraints = false
