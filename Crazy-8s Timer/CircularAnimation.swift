@@ -33,7 +33,8 @@ extension ViewController {
 
         shapeLayer.path = circularPath.cgPath
         shapeLayer.lineWidth = 20
-        shapeLayer.fillColor = UIColor.clear.cgColor
+//        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.fillColor = UIColor.systemBackground.cgColor
         shapeLayer.strokeEnd = 0
         shapeLayer.lineCap = CAShapeLayerLineCap.round
         shapeLayer.strokeColor = UIColor.blue.cgColor
