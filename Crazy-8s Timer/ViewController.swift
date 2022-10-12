@@ -54,6 +54,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .systemBackground
+        
         navigationItem.title = "Crazy-8s Timer"
 
         NotificationCenter.default.addObserver(self, selector: #selector(pauseWhenEnteringBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
@@ -77,9 +79,6 @@ class ViewController: UIViewController {
         
         resetC8Button.addTarget(self, action: #selector(reset), for: .touchUpInside)
         resetC8Button.setTitle("Reset", for: .normal)
-        
-//        displayLink = CADisplayLink(target: self, selector: #selector(basicAnimation))
-//        displayLink.add(to: .main, forMode: .common)
     }
     
     
@@ -89,7 +88,7 @@ class ViewController: UIViewController {
         shapeLayer.makeAnimationPersistent()
         pulsatingLayer.makeAnimationPersistent()
         
-//        if countDownTime == 60 && isTimerRunning == false && pauseTapped {
+//        if countDownTime == 60 && isTimerRunning == true {
 //            basicAnimation()
 //        }
     }
@@ -137,8 +136,6 @@ class ViewController: UIViewController {
     @objc func startTimer() {
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(session), userInfo: nil, repeats: true)
         RunLoop.current.add(timer, forMode: .common)
-//        let displayLink = CADisplayLink(target: self, selector: #selector(session))
-//        displayLink.add(to: .current, forMode: .common)
         isTimerRunning = true
     }
     

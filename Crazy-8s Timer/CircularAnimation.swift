@@ -19,8 +19,8 @@ extension ViewController {
         
         trackLayer.path = circularPath.cgPath
         trackLayer.strokeColor = UIColor.trackColor
-        trackLayer.lineWidth = 15
-        trackLayer.fillColor = UIColor.systemBackground.cgColor
+        trackLayer.lineWidth = 25
+        trackLayer.fillColor = UIColor.clear.cgColor
         
         view.layer.addSublayer(trackLayer)
     }
@@ -28,12 +28,12 @@ extension ViewController {
     func circularAnimationLayer() {
         let center = view.center
         
-        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.40, startAngle: -CGFloat.pi / 2, endAngle: -2.5 * CGFloat.pi, clockwise: false)
+        let circularPath = UIBezierPath(arcCenter: center, radius: view.frame.width * 0.43, startAngle: -CGFloat.pi / 2, endAngle: -2.5 * CGFloat.pi, clockwise: false)
 
 
         shapeLayer.path = circularPath.cgPath
         shapeLayer.lineWidth = 20
-        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.fillColor = UIColor.systemBackground.cgColor
         shapeLayer.strokeEnd = 0
         shapeLayer.lineCap = CAShapeLayerLineCap.round
         shapeLayer.strokeColor = UIColor.blue.cgColor
