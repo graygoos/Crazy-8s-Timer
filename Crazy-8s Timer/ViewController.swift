@@ -278,7 +278,6 @@ class ViewController: UIViewController {
     func addLabelConstraints() {
   
         view.addSubview(timerLabel)
-        timerLabel.font.withSize(view.bounds.height * 0.15)
         NSLayoutConstraint.activate([
             timerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             timerLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
