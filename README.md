@@ -10,8 +10,9 @@ Crazy-8s is a design sprint technique used in User Experience design. The idea i
 * Pause/resume timer when interrupted  
 * Works in Light and Dark mode  
 
-![Uploading Simulator Screen Shot - iPhone 13 Pro - 2023-03-20 at 11.32.07.png…]()
-![Simulator Screen Shot - iPhone 13 Pro - 2023-03-20 at 11 54 11](https://user-images.githubusercontent.com/52054174/226866458-996ef195-b4f6-4112-9c22-579a8539784e.png)
+<img src="https://user-images.githubusercontent.com/52054174/226867056-a59aba2e-f8d3-4a7e-ad59-ace7ddabe041.png" width="460" height="1100">
+
+<img src="https://user-images.githubusercontent.com/52054174/226866458-996ef195-b4f6-4112-9c22-579a8539784e.png" width="460" height="1100">
 
 
 ## Technologies
