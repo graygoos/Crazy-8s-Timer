@@ -43,9 +43,3 @@ Crazy-8s is a design sprint technique used in User Experience design. The idea i
 
 ## Contributing
 Contributions to the app are welcome! If you find a bug or have a feature suggestion, please open an issue on GitHub.
-
-## License
-This app is licensed under the MIT License. See the LICENSE file for details.
-
-## Acknowledgments
-The UIKit documentation for providing guidance on building iOS apps.
