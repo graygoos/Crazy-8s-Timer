@@ -14,7 +14,7 @@ Crazy-8s is a design sprint technique used in User Experience design. The idea i
 
 <img src="https://user-images.githubusercontent.com/52054174/226866458-996ef195-b4f6-4112-9c22-579a8539784e.png" width="460" height="1100">
 
-<![](https://user-images.githubusercontent.com/52054174/226868949-8cffb85c-3898-4219-a844-29e765c6b605.gif) width="460" height="1100">
+<img src="https://user-images.githubusercontent.com/52054174/226868949-8cffb85c-3898-4219-a844-29e765c6b605.gif" width="460" height="1100"/>
 
 ## Technologies
 * UIKit  
