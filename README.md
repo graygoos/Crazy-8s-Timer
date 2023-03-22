@@ -13,13 +13,13 @@ Crazy-8s is a design sprint technique used in User Experience design. The idea i
 * Works in Light and Dark mode  
 
 <p float="left">
-  <img src="https://user-images.githubusercontent.com/52054174/226873266-d8cf0ac6-eab4-4f78-bce3-e935a1d2270d.png" width="460" height="1100">
+  <img src="https://user-images.githubusercontent.com/52054174/226873266-d8cf0ac6-eab4-4f78-bce3-e935a1d2270d.png" width="376" height="900">
   
-  <img src="https://user-images.githubusercontent.com/52054174/226866458-996ef195-b4f6-4112-9c22-579a8539784e.png" width="460" height="1100">
+  <img src="https://user-images.githubusercontent.com/52054174/226866458-996ef195-b4f6-4112-9c22-579a8539784e.png" width="376" height="900">
 </p>
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/52054174/226883121-fe8f9a0c-14af-4aa2-9c61-1400986a619c.gif" width="460" height="1100"/>
+    <img src="https://user-images.githubusercontent.com/52054174/226883121-fe8f9a0c-14af-4aa2-9c61-1400986a619c.gif" width="376" height="900"/>
 </p>
 
 ## Frameworks/Technologies
