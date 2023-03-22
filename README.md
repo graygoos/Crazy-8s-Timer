@@ -8,10 +8,10 @@ Pause/resume timer when interrupted
 Works in Light and Dark mode
 
 ## Technologies
-UIKit
-AVFoundation
-CAAnimation
-Timer
+UIKit  
+AVFoundation  
+CAAnimation  
+Timer  
 
 ## Getting Started
 To run the app, you will need Xcode and an iOS simulator or physical device.
