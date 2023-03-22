@@ -2,10 +2,10 @@
 Crazy-8s is a design sprint technique used in User Experience design. The idea is to block out eight minutes of time to sketch eight ideas, a minute for each idea. This Crazy-8s timer was developed to facilitate Crazy-8’s sessions. It beeps every 60 seconds for eight minutes, letting the user know when to move to the next sketch/idea. At the eighth minute the timer beeps three times to let the user know the session has ended.
 
 ## Features
-Beeps every 60 seconds for eight minutes indicating to user to move to the next sketch
-Beeps three times at the eighth minute to indicate the end of the session
-Pause/resume timer when interrupted
-Works in Light and Dark mode
+Beeps every 60 seconds for eight minutes indicating to user to move to the next sketch  
+Beeps three times at the eighth minute to indicate the end of the session  
+Pause/resume timer when interrupted  
+Works in Light and Dark mode  
 
 ## Technologies
 UIKit  
@@ -14,16 +14,16 @@ CAAnimation
 Timer  
 
 ## Getting Started
-To run the app, you will need Xcode and an iOS simulator or physical device.
-Clone the repository to your local machine.
-Open the Crazy-8s Timer.xcodeproj file in Xcode.
-Select a simulator or device to run the app on.
-Click the run button to build and run the app.
+To run the app, you will need Xcode and an iOS simulator or physical device.  
+Clone the repository to your local machine.  
+Open the Crazy-8s Timer.xcodeproj file in Xcode.  
+Select a simulator or device to run the app on.  
+Click the run button to build and run the app.  
 
 ## How to Use
-Start the timer by tapping the start button.
-The app will display the time remaining for each round, along with visual and audio cues to indicate when the round begins and ends.
-Pause or reset the timer as needed.
+Start the timer by tapping the start button.  
+The app will display the time remaining for each round, along with visual and audio cues to indicate when the round begins and ends.  
+Pause or reset the timer as needed.  
 
 ## Contributing
 Contributions to the app are welcome! If you find a bug or have a feature suggestion, please open an issue on GitHub.
