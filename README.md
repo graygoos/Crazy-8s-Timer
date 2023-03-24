@@ -1,10 +1,10 @@
 # Crazy 8's Timer App for UX Design Sprints
 
-Crazy-8s is a design sprint technique used in User Experience design. The idea is to block out eight minutes of time to sketch eight ideas, a minute for each idea. This Crazy-8s timer was developed to facilitate Crazy-8’s sessions. It beeps every 60 seconds for eight minutes, letting the user know when to move to the next sketch/idea. At the eighth minute the timer beeps three times to let the user know the session has ended.
-
 <p align="center">
     <img src="https://user-images.githubusercontent.com/52054174/226864006-3f708e7b-0cac-418f-bebe-51996db76116.png" width="250" height="250">
 </p>
+
+Crazy-8s is a design sprint technique used in User Experience design. The idea is to block out eight minutes of time to sketch eight ideas, a minute for each idea. This Crazy-8s timer was developed to facilitate Crazy-8’s sessions. It beeps every 60 seconds for eight minutes, letting the user know when to move to the next sketch/idea. At the eighth minute the timer beeps three times to let the user know the session has ended.
 
 ## Features
 * Beeps every 60 seconds for eight minutes indicating to user to move to the next sketch  
